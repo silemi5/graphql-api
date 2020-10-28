@@ -3,11 +3,11 @@ services:
   mongo:
     image: 'mongo:4.4.1'
     restart: always
-    container_name: 'rest-api-mongo'
+    container_name: 'graphql-api-mongo'
     environment:
       - MONGO_INITDB_ROOT_USERNAME=silemi5
       - MONGO_INITDB_ROOT_PASSWORD=ocisly
-      - MONGO_INITDB_DATABASE=rest-api-db
+      - MONGO_INITDB_DATABASE=graphql-api-db
     volumes:
       - ./mongo-volume:/data/db
       - ./docker-entrypoint-initdb:/docker-entrypoint-initdb.d:ro
