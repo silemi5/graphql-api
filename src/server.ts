@@ -1,15 +1,21 @@
-import express from 'express'
-import { graphqlHTTP } from 'express-graphql'
-import {
-  GraphQLSchema,
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLList,
-  GraphQLInt,
-  GraphQLNonNull
-} from 'graphql'
+import { ApolloServer, gql } from 'apollo-server';
 import mongoose from 'mongoose'
+import { typeDefs } from './type-defs'
+import { resolvers } from './resolvers'
+import dotenv from 'dotenv'
 
-export const app = express();
+dotenv.config();
 
-app.listen(5000., () => console.log('Server running!'))
+const uri: string = process.env.CONNECTION_URI || ""
+
+mongoose.connect(uri)
+
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+});
+
+// The `listen` method launches a web server.
+server.listen().then(({ url }) => {
+  console.log(`🚀  Server ready at ${url}`);
+});
