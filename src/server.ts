@@ -8,6 +8,7 @@ import {
   GraphQLInt,
   GraphQLNonNull
 } from 'graphql'
+import mongoose from 'mongoose'
 
 export const app = express();
 
