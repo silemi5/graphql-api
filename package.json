@@ -4,7 +4,7 @@
   "description": "A GraphQL implementation of koa-rest-api",
   "main": "src/main.js",
   "scripts": {
-    "test": "mocha \"./**/*.spec.ts\"",
+    "test": "./node_modules/.bin/cucumber-js",
     "lint": "eslint src/*.ts test/*.ts --fix",
     "docker": "docker-compose up",
     "start": "nodemon --exec ts-node src/server.ts"
@@ -12,6 +12,7 @@
   "author": "silemi5",
   "license": "ISC",
   "dependencies": {
+    "@types/cucumber": "^6.0.1",
     "@types/jsonwebtoken": "^8.5.0",
     "@types/mocha": "^8.0.3",
     "@types/mongoose": "^5.7.36",
@@ -19,9 +20,11 @@
     "apollo-server": "^2.18.2",
     "apollo-server-express": "^2.18.2",
     "apollo-server-koa": "^2.18.2",
+    "axios": "^0.21.0",
     "bcrypt": "^5.0.0",
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
+    "cucumber": "^6.0.5",
     "dotenv": "^8.2.0",
     "graphql": "^15.4.0",
     "graphql-compose": "^7.22.1",
