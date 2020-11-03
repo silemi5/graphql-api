@@ -23,7 +23,7 @@ Given('I entered {string} as my email and {string} as my password', async functi
 })
 
 
-When('we try to create a new user', async function() {
+When('I try to create a new user', async function() {
   const query = `
     mutation createUser($input: CreateUserInput!) {
       createUser(input: $input) {
@@ -43,7 +43,7 @@ When('we try to create a new user', async function() {
   res = response.data.data.createUser
 })
 
-Then('we should have given an ID, email, and name', async function () {
+Then('I should have given an ID, email, and name', async function () {
   expect(res).to.have.all.keys('id', 'email', 'name');
 })
 
