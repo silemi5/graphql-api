@@ -7,6 +7,10 @@ export const typeDefs = gql`
     name: String
   }
 
+  type Token {
+    token: String!
+  }
+
   input CreateUserInput {
     email: String!
     password: String!
@@ -19,7 +23,7 @@ export const typeDefs = gql`
   }
 
   input AuthenticateUserInput {
-    name: String
+    email: String
     password: String
   }
 
@@ -30,6 +34,7 @@ export const typeDefs = gql`
 
   type Query {
     users: [User!]!
-    # user(id: ID!): User!
+    authenticateUser(input: AuthenticateUserInput!): Token!
+    user(id: ID!): User
   }
 `
