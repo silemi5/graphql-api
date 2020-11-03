@@ -13,6 +13,12 @@ mongoose.connect(uri)
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  context: ({ req }) => {
+    const auth = req.headers.authorization || '';
+    return {
+      auth
+    }
+  }
 });
 
 // The `listen` method launches a web server.
