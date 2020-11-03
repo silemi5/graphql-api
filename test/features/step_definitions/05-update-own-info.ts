@@ -21,19 +21,16 @@ const instance = axios.create({
   }
 })
 
-const ID_TO_SEARCH = "abcdefghijklmnopqrstuvwxyz"
-
-let credentials: { email: string, password: string }
+const credentials: { email: string, password: string } = {  email: "example@example.com", password: "password1" }
 let response: { _id: string; name: string; email: string}
 let token: string
+let updatedInfo: { name: string; password: string }
 
-Given('I\'m already logged-in with this account', async function () {
+Given('I\'m already logged-in', async function () {
   const query = `
     mutation authenticateUser($input: AuthenticateUserInput) {
       authenticateUser(input: $input) {
-        id,
-        name,
-        email
+        token
       }
     }
   `
@@ -47,32 +44,37 @@ Given('I\'m already logged-in with this account', async function () {
   token = tokenResponse.token
 });
 
-When('I try to get a single user', async function () {
+When("I try to update my name and or password to {string} and {string} respectively", async function (string, string2) {
+  updatedInfo = { name: string, password: string2 }
   
-
-  await User.create({ _id: ID_TO_SEARCH, email: "abc@example.com"})
-
   const query = `
-    user($id: string) {
-      id,
-      name,
-      email
+    mutation updateOwnUser($input: UpdateProfileInput){
+      updateOwnUser(input: $input) {
+        id,
+        name,
+        email
+      }
     }
+  
   `
 
-  response = await instance.post('graphql', {
+  response = await instance.patch('graphql', {
     query: query,
-    variables: { "id": ID_TO_SEARCH}
+    variables: { "input": updatedInfo }
   }, {
     headers: {
       "Authorization": `Bearer ${token}`
     }
   })
+
+  if(!response) throw new Error("Something happened!")
 });
 
-Then('I should get his\/her ID, email, and name', async function () {
+Then('I should get my updated name, along with ID and email', async function () {
   expect(response).to.have.all.keys('id', 'email', 'name');
-  expect(response).to.include({
-    id: ID_TO_SEARCH,
+  expect(response).to.deep.equal({
+    "id": response._id,
+    "email": credentials.email,
+    "name": updatedInfo.name
   })
 });

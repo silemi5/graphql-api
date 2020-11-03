@@ -27,7 +27,7 @@ let response: { "token": string }
 
 Given('I already have an account with {string} as my email and {string} as my password', async function (string, string2) {
   credentials = { email: string, password: string2 }
-  createdUser = await User.create({ email: string, password: string2 })
+  createdUser = await User.findOne({ email: string })
 
   if(!createdUser) throw new Error("Something happened!")
 });
@@ -36,9 +36,7 @@ When('I try to login using the abovementioned credentials', async function () {
   const query = `
     mutation authenticateUser($input: AuthenticateUserInput) {
       authenticateUser(input: $input) {
-        id,
-        name,
-        email
+        token
       }
     }
   `
