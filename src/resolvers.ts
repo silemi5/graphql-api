@@ -21,9 +21,9 @@ export const resolvers = {
       return await UserModel.find({ id: id })
     },
     authenticateUser: async (_: null, { input }: { input: { email: string, password: string } }) => {
-      const user: any = await UserModel.find(input)
+      const user: any = await UserModel.findOne(input)
 
-      if(!user || user === []) throw new Error("Invalid credentials!")
+      if(!user) throw new Error("Invalid credentials!")
 
       return {
         token: sign({
