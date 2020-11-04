@@ -22,43 +22,60 @@ const instance = axios.create({
 })
 
 const credentials: { email: string, password: string } = {  email: "example@example.com", password: "password1" }
-let response: { _id: string; name: string; email: string}
+let response: {
+  "data": {
+    "data": {
+      "updateProfile": {
+        "id": string;
+        "name": string;
+        "email": string;
+      }
+    }
+  }
+}
 let token: string
 let updatedInfo: { name: string; password: string }
 
 Given('I\'m already logged-in', async function () {
   const query = `
-    mutation authenticateUser($input: AuthenticateUserInput) {
+    query authenticateUser($input: AuthenticateUserInput!) {
       authenticateUser(input: $input) {
         token
       }
     }
   `
-  const tokenResponse: { "token": string } = await instance.post('graphql', {
+  const tokenResponse: { 
+    "data": {
+      "data": {
+        "authenticateUser": {
+          "token": string 
+        }
+      }
+    } 
+  } = await instance.post('graphql', {
     query: query,
     variables: { "input": credentials }
   })
 
   if(!tokenResponse) throw new Error("Something happened!")
 
-  token = tokenResponse.token
+  token = tokenResponse.data.data.authenticateUser.token
 });
 
 When("I try to update my name and or password to {string} and {string} respectively", async function (string, string2) {
   updatedInfo = { name: string, password: string2 }
   
   const query = `
-    mutation updateOwnUser($input: UpdateProfileInput){
-      updateOwnUser(input: $input) {
+    mutation updateProfile($input: UpdateProfileInput!){
+      updateProfile(input: $input) {
         id,
         name,
         email
       }
     }
-  
   `
 
-  response = await instance.patch('graphql', {
+  response = await instance.post('graphql', {
     query: query,
     variables: { "input": updatedInfo }
   }, {
@@ -71,9 +88,11 @@ When("I try to update my name and or password to {string} and {string} respectiv
 });
 
 Then('I should get my updated name, along with ID and email', async function () {
-  expect(response).to.have.all.keys('id', 'email', 'name');
-  expect(response).to.deep.equal({
-    "id": response._id,
+  const res = response.data.data.updateProfile
+
+  expect(res).to.have.all.keys('id', 'email', 'name');
+  expect(res).to.deep.equal({
+    "id": res.id,
     "email": credentials.email,
     "name": updatedInfo.name
   })

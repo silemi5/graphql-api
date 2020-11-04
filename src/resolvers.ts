@@ -1,5 +1,5 @@
 import UserModel, { UserDocument } from './models/user'
-import { sign } from 'jsonwebtoken'
+import { sign, verify } from 'jsonwebtoken'
 import dotenv from 'dotenv'
 import mongoose from 'mongoose'
 
@@ -42,6 +42,33 @@ export const resolvers = {
       } catch {
         throw new Error(`Something happened~`)
       }
+    },
+    updateProfile: async(_: null, { input }: { input: {name: string; password: string } }, context: { 'auth': string }) => {
+      const decodedPayload: any = await checkAuthentication(context)
+
+      if(!decodedPayload) throw new Error('User not logged in!')
+
+      const user = await UserModel.findById(decodedPayload.id).select('password')
+
+      if(user) {
+        user.name = input.name || user.name 
+        user.password = input.password || user.password
+        user.save()
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name
+        }
+      }
+      else {
+        throw new Error("User not found!")
+      }
     }
   }
+}
+
+async function checkAuthentication(ctx: { 'auth': string }) {
+  const token = ctx.auth.split("Bearer ")[1]
+  return verify(token, JWT_SECRET)
 }
