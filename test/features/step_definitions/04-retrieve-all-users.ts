@@ -22,25 +22,39 @@ const instance = axios.create({
 })
 
 const credentials: { email: string, password: string } = {  email: "example@example.com", password: "password1" }
-let response: []
+let response: {
+  "data": {
+    "data": {
+      "users": []
+    }
+  }
+}
 let token: string
 
 Given('I\'m already logged in', async function(){
   const query = `
-    mutation authenticateUser($input: AuthenticateUserInput) {
+    query authenticateUser($input: AuthenticateUserInput!) {
       authenticateUser(input: $input) {
         token
       }
     }
   `
-  const tokenResponse: {'token': string} = await instance.post('graphql', {
+  const tokenResponse: { 
+    "data": {
+      "data": {
+        "authenticateUser": {
+          "token": string 
+        }
+      }
+    } 
+  } = await instance.post('graphql', {
     query: query,
     variables: { "input": credentials }
   })
 
   if(!tokenResponse) throw new Error("Something happened!")
 
-  token = tokenResponse.token
+  token = tokenResponse.data.data.authenticateUser.token
 })
 
 When('I try to get all users', async function () {
@@ -58,7 +72,7 @@ When('I try to get all users', async function () {
     query: query,
   }, {
     headers: {
-      "Authorization:": `Bearer ${token}`
+      "Authorization": `Bearer ${token}`
     }
   })
 
@@ -66,5 +80,6 @@ When('I try to get all users', async function () {
 });
 
 Then('I should get everyone\'s ID, email, and name', async function () {
-  expect(response).to.be.an('array')
+  const res = response.data.data.users
+  expect(res).to.be.an('array')
 });
