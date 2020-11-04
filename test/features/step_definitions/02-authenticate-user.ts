@@ -1,7 +1,7 @@
 import { Given, When, Then } from 'cucumber'
 import axios from 'axios'
 import chai from "chai";
-import { User } from '../../../src/models/user'
+import User from '../../../src/models/user'
 import mongoose from 'mongoose'
 import { verify } from 'jsonwebtoken'
 import dotenv from 'dotenv'
@@ -23,7 +23,15 @@ const instance = axios.create({
 
 let credentials: { email: string, password: string }
 let createdUser
-let response: { "token": string }
+let response: { 
+  "data": {
+    "data": {
+      "authenticateUser": {
+        "token": string 
+      }
+    }
+  } 
+}
 
 Given('I already have an account with {string} as my email and {string} as my password', async function (string, string2) {
   credentials = { email: string, password: string2 }
@@ -34,7 +42,8 @@ Given('I already have an account with {string} as my email and {string} as my pa
 
 When('I try to login using the abovementioned credentials', async function () {
   const query = `
-    mutation authenticateUser($input: AuthenticateUserInput) {
+    query authenticateUser($input: AuthenticateUserInput!)
+    {
       authenticateUser(input: $input) {
         token
       }
@@ -50,7 +59,7 @@ When('I try to login using the abovementioned credentials', async function () {
 });
 
 Then('I should receive a token, with my id, name, and email as the payload', async function () {
-  
-  expect(response).to.have.all.keys('token');
-  expect(verify(response.token, JWT_SECRET)).have.all.keys('id', 'email', 'name', 'iat');
+  const res: { 'token': string } = response.data.data.authenticateUser
+  expect(res).to.have.all.keys('token');
+  expect(verify(res.token, JWT_SECRET)).have.all.keys('id', 'email', 'name', 'iat');
 });

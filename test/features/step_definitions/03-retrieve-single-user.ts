@@ -1,7 +1,7 @@
 import { Given, When, Then } from 'cucumber'
 import axios from 'axios'
 import chai from "chai";
-import { User } from '../../../src/models/user'
+import User from '../../../src/models/user'
 import mongoose from 'mongoose'
 import { sign, verify } from 'jsonwebtoken'
 import dotenv from 'dotenv'
