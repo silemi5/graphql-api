@@ -16,9 +16,9 @@ export const resolvers = {
       // TODO: Must be protected route
       return await UserModel.find({})
     },
-    user: async (_: null, id: string) => {
+    user: async (_: null, id: { id: string } ) => {
       // TODO: Must be protected route
-      return await UserModel.find({ id: id })
+      return await UserModel.findById(id.id)
     },
     authenticateUser: async (_: null, { input }: { input: { email: string, password: string } }) => {
       const user: any = await UserModel.findOne(input)
@@ -28,13 +28,12 @@ export const resolvers = {
       return {
         token: sign({
           id: user._id,
-          name: user.name,
+          name: user.name || null,
           email: user.email
         }, JWT_SECRET)
       }
 
     },
-
   },
   Mutation: {
     createUser: async (_: null, { input }: { input: { email: string; password: string; } }) => {
